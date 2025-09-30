@@ -76,7 +76,7 @@ connection string : mongodb+srv://Parth:<db_password>@cluster0.jrnfayp.mongodb.n
 ```
 use this above connection string in your Application to connect to data base 
 ```
-I used this code to connect to data base and call this function from index.js file 
+
 ```javascript 
 const connectDB = async () => {
   try {
@@ -97,4 +97,18 @@ export connectDB;
 ```
 1. Always write code of data base in 'try - catch '
 2. Your database is in another continent always use 'Async- await'
+```
+
+# Note for errors 
+```
+1. In the import section write the complete name of the file with extension other wise it will throw error. ( only naming the directory will now work)
+```
+<strong>for eg : </strong>
+### this will throw error
+```javascript
+import { DB_NAME } from "../constants";
+```
+### this will not throw error
+```javascript
+import { DB_NAME } from "../constants.js";
 ```
