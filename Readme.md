@@ -91,12 +91,43 @@ const connectDB = async () => {
 };
 export connectDB;
 ```
+## Day 3 (Making Utilities and Adding more packages)
+### Packages
+```
+npm i cors
+npm i cookie-parser
+```
+## Work I have done today 
+```
+1.  Today I Created Utilities to handle Api Response and Api Eroor Response
+```
+```
+2.  Added aynchandler for routes controllers which enforse Promise.
+```
+
+3.  Added Configrations in app.js 
+
+``` javascript
+app.use(Cors({
+    origin: process.env.CORS_ORIGIN,
+    credentials: true
+}))
+// configrations. 
+app.use(express.json({limit:"16kb"})) // used to set 
+app.use(express.urlencoded({extended:true,limit:"16kb"}))
+app.use(express.static("public"))
+app.use(cookieParser())
+```
+```
+Note for Day 3 : Today I just created the classes ApiError , ApiResponse, ayncHandler (Higher order function ) which is I am going to user to standardize the Api errors, Responses . so In case if i get errors it will be easier for me to resolve.
+```
 
 
 ## Good Practices..
 ```
 1. Always write code of data base in 'try - catch '
 2. Your database is in another continent always use 'Async- await'
+3. app.use() is most of the time used in middlewares.
 ```
 
 # Note for errors 
