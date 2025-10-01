@@ -128,6 +128,7 @@ Note for Day 3 : Today I just created the classes ApiError , ApiResponse, ayncHa
 1. Always write code of data base in 'try - catch '
 2. Your database is in another continent always use 'Async- await'
 3. app.use() is most of the time used in middlewares.
+4. async function () always return promise. need to handle that for good practice.
 ```
 
 # Note for errors 
