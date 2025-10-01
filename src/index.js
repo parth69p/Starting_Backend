@@ -1,21 +1,47 @@
 // require('dotenv').config({path:})
-import dotenv, { configDotenv } from "dotenv"
+import dotenv, { configDotenv } from "dotenv";
 import mongoose from "mongoose";
 // import { DB_NAME } from "./constants";
 import connectDB from "./Db/index.js";
-
+import { app } from "./app.js";
+import { asyncHandler } from "./utils/asyncHandler.js";
 
 dotenv.config({
-    path:'./.env'
-})
+  path: "./.env",
+});
 
 
-connectDB();
+// **********************************Just for Testing **************************
+// app.get('/',asyncHandler((req,res)=>{
+// res.send("thanku for calling.")
+// }))// for testing.
+
+// app.post('/',asyncHandler((req,res)=>{
+//     console.log("userCreated");
+//     res.send(["name","Parth","message","Thanks for post Request"])
+// }))
+// ******************************************************************************
 
 
+try{
+connectDB()
+  .then(() => {
+   const appListen = app.listen(process.env.PORT, () => {
+        console.log(`Server is runnint at Port : http://localhost:${process.env.PORT}`);
+      })
 
-
-
+      appListen.on("error", (error) => {
+        console.log("Error while Listening");
+        throw error
+      });
+  })
+  .catch((err) => {
+    console.log("MongoDB connection Failed !!!", err);
+  });
+}
+catch(error){
+    console.log(error);
+}
 
 
 /*
