@@ -1,9 +1,21 @@
 # Backend Learning
 Now going to start backend from Chai aur Code. with javascript
 
--[MODEL LINK]
+-[MODEL LINK](https://app.eraser.io/workspace/YtPqZ1VogxGy1jzIDkzj)
 
-## Setup of Backend ( day 1)
+<strong >Packages Used</strong>
+
+```
+npm i express
+npm i cookie-parser
+npm i cors
+npm i dotenv
+npm i mongoose
+npm i mongoose-aggregate-paginate-v2
+npm i jsonwebtoken
+```
+
+##  Day 1 (Setup of Backend)
 
 ``` html
 1. Installed dev dependies 
@@ -92,11 +104,13 @@ const connectDB = async () => {
 export connectDB;
 ```
 ## Day 3 (Making Utilities and Adding more packages)
+```
+Note for Day 3 : Today I just created the classes ApiError , ApiResponse, ayncHandler (Higher order function ) which is I am going to user to standardize the Api errors, Responses . so In case if i get errors it will be easier for me to resolve.
+```
 ### Packages
-```
-npm i cors
-npm i cookie-parser
-```
+1. <span style="color:green">npm i cors</span>
+2. <span style="color:green">npm i cookie-parser</span>
+
 ## Work I have done today 
 ```
 1.  Today I Created Utilities to handle Api Response and Api Eroor Response
@@ -118,11 +132,120 @@ app.use(express.urlencoded({extended:true,limit:"16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
 ```
+## Day 4 (User Model and Video Model)
 ```
-Note for Day 3 : Today I just created the classes ApiError , ApiResponse, ayncHandler (Higher order function ) which is I am going to user to standardize the Api errors, Responses . so In case if i get errors it will be easier for me to resolve.
+Today i created user and video models .
+```
+## Work I have done today
+UserModel: 
+
+1.<strong> Created user Model</strong>
+
+2.<strong> Added Two packages </strong>
+```javascript
+  import jwt from "jsonwebtoken";
+  import bcrypt from "bcrypt"
 ```
 
+3.<strong>Learn about Middlewares (HOOKS).</strong>
+```
+Middleware is like a middle layer (a bridge) between an incoming request/action and the final response/result.
+```
 
+```javascript
+userSchema.pre("save",async function(next){
+    if(!this.isModified("password")) return next();
+
+    this.password = bcrypt.hash(this.password,10)
+    next()
+})
+```
+```
+In our case that pre(): is middleware we used,Accepts two arguments ("event",callbackfunction) 
+
+callbackfunction : accepts next() as argument to call next middleware or passing the control.
+
+Examples(event): "save", "validate", "remove", "find", "findOne", "updateOne", "aggregate",
+``` 
+4.<strong> Defining Schema methods:</strong>
+```javascript
+userSchema.methods.isPasswordCorrect = async function(password){
+   return await bcrypt.compare(password,this.password)
+}// adding function.
+```
+
+```javascript
+userSchema.methods.generateRefreshToken = function(){
+     jwt.sign({
+        _id: this._id,
+    },
+process.env.REFRESH_TOKEN_SECRET,{
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRY
+})
+}
+```
+here we have added function with schema to clean the code.
+
+5.<strong> JWT tokens ( jason web tokens )</strong>
+
+these are bearer token we are going to use in our code.
+```
+JWT is a compact, URL-safe token used for authentication and authorization.
+
+Think of it as a digital ID card for your users.
+```
+Structure of jwt :
+```
+header.payload.signature
+```
+Used in Our code: (user.model)
+```javascript
+userSchema.methods.generateAccessToken = function(){
+    jwt.sign({
+        _id: this._id,
+        email: this.email,
+        username: this.username,
+        fullname : this.fullName
+    },
+process.env.ACCESS_TOKEN_SECRET,{
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRY
+})
+}
+```
+```
+jwt.sign() :  this function is used to create the token which accepts  three arguments 
+
+1. {object}: object on data which we going to pass in our token .
+2. SecretKey : this key is used to encrypt the data ( this is wriiten by us)
+3. Token Expiry : this will set the expiry time of the token .
+```
+6.<strong>Learn about Bcrypt</strong>
+```
+We Use bcrypt for the hashing password. basically used enscrypt the password. 
+```
+```javascript
+userSchema.pre("save",async function(next){
+    if(!this.isModified("password")) return next();
+
+    this.password = bcrypt.hash(this.password,10)
+    next()
+})
+```
+we can bcrypt with middle ware, before inserting password in the data base we are encrypting the password.
+
+7.<strong>Learn about plugIn</strong>
+```
+A plugin is like an add-on or extension that you can attach to your schema to add extra functionality without writing all the code yourself.
+
+Think of it as pre-built code you “plug in” to your schema to get new features.
+```
+
+```javascript 
+
+videoSchema.plugin(mongooseAggregatePaginate)
+```
+Plugin we used in out code to add exptra functionality of paging videos.
+#
 ## Good Practices..
 ```
 1. Always write code of data base in 'try - catch '
