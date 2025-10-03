@@ -13,6 +13,8 @@ npm i dotenv
 npm i mongoose
 npm i mongoose-aggregate-paginate-v2
 npm i jsonwebtoken
+npm i cloudinary
+npm i multer
 ```
 
 ##  Day 1 (Setup of Backend)
@@ -245,6 +247,82 @@ Think of it as pre-built code you “plug in” to your schema to get new featur
 videoSchema.plugin(mongooseAggregatePaginate)
 ```
 Plugin we used in out code to add exptra functionality of paging videos.
+
+
+## Day 5 ( Learning about cloudinary and fie upload)
+```
+Note : I used cloudinary for the File upload 
+```
+[Cloudinary link](https://console.cloudinary.com/app/c-df05e38ef739e5550ee043869d3799/home/dashboard)
+
+this is the cloud service I am  going to use in our backend for the file upload (I am using free plan)
+
+## Work I have done today.
+
+```
+So the basic user Scenario : we are taking file from the user (by using multer) and temporary save this file/image to our local server and immidiately upload this file to the cloud (by using cloudinary)
+```
+1.<strong> learn about Cloudinary </strong>
+```
+for using the cloudianry we need to add the package to our project(backend ) 
+```
+npm install cloudinary 
+```
+need to add the configrations of cloudinary to use the services like : 
+```
+```
+(apikey , cloud_name, api_secret.)
+```
+Code we used in our cloudinaryUtility :
+```javascript
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+})
+```
+these are the conigrations need to use the cloudinary.
+
+2.<strong>learn about multer</strong>
+```
+Multer is a Node.js middleware for handling file uploads basically used with (express.js)
+```
+```
+I use multer as a middle ware. the basic work of multer is to take files from the frontend. 
+```
+BASIC CODE WE USED
+
+```javascript
+import multer from "multer";
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "../pulbic/temp")
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname)
+  }
+})
+export const upload = multer({ storage,})
+```
+This code will tell the multer where to save the file and we can also perfom changes in file name before saving as for saving unique file name. 
+
+### Package Used 
+
+1. <span style ="color:green">npm i multer</span>
+2. <span style ="color:green">npm i cloudinary </span>
+
+
+
+3.<Strong>Learn about FileSystem (fs)</strong>
+
+this library we are going to handle the file system 
+all the function regarding files
+```
+1. Read 
+2. write 
+```
+<h2 style= "color:yellow; text-align= center">Today our setup is finally completed </h2>
 #
 ## Good Practices..
 ```
