@@ -303,7 +303,7 @@ const storage = multer.diskStorage({
     cb(null, file.originalname)
   }
 })
-export const upload = multer({ storage,})
+export const upload = multer({ storage})
 ```
 This code will tell the multer where to save the file and we can also perfom changes in file name before saving as for saving unique file name. 
 
@@ -323,13 +323,105 @@ all the function regarding files
 2. write 
 ```
 <h2 style= "color:yellow; text-align= center">Today our setup is finally completed </h2>
+
+
+## Day 6 ( Learning about Htpp)
+![Notes](<WhatsApp Image 2025-10-04 at 14.21.35_b426b5a2.jpg>)
+
+![alt text](<WhatsApp Image 2025-10-04 at 14.21.48_1590ce85.jpg>)
+
+![alt text](<WhatsApp Image 2025-10-04 at 14.22.04_fa94fa4f.jpg>)
+
+
+## Day 7 (Learning about Controllers And Routes)
+
+```
+today I learn about the concept of Controllers in backend , controllers are methods written for every api end point which handles some kinds of operation.
+```
+```
+In our code we are not using controllers directly we are using middle ware and routing to send control to controllers 
+```
+
+## How I am using Controllers
+
+1. <strong>  First Step</strong>
+```
+here we Created the 'User.controller.js' seprate file and exporting the function 'registeruser. 
+```
+```javascript
+import { asyncHandler } from "../utils/asyncHandler.js";
+const registerUser = asyncHandler(async (req,res)=>{
+     res.status(200).json({
+        message: "User Registered"
+    })
+})
+export {registerUser}
+```
+2. <strong>Second Step</strong>
+
+```
+here we difine the routes of the controller in 'User.routes.js' for the redirecting control to the 'user.contorller.js'
+```
+```javascript
+// all routing. of users
+import { Router } from "express";
+import { registeruser } from "../controllers/user.controller.js";
+
+const router = Router()
+
+
+router.route('/register').post(registeruser)
+
+
+export default router
+```
+3. <strong>Third Step</strong>
+```
+here we Imported the route and declare it for which route to redirect 
+```
+```javascript
+// routes import 
+import userRouter from './routes/user.routes.js'
+
+// routes declaration
+app.use("/api/v1/users",userRouter)
+
+```
 #
+<strong>Flow</strong>
+
+```
+/api/v1/users --> userRouter(/register) --> registerUser(user.controller)
+```
+* end point willl be 
+```
+/api/v1/users/register : this will call the Register user function.
+```
+
+## How I am using Routes
+1. First need to import the Router
+```javascript
+//Importing
+import { Router } from "express";
+```
+2. Second need to start the Router as same as react.
+```javascript
+const router = Router()
+```
+3. Third just need to use that this for routing with route() method 
+```javascript
+router.route('/register').post(registerUser)
+```
+
+
+
 ## Good Practices..
 ```
 1. Always write code of data base in 'try - catch '
 2. Your database is in another continent always use 'Async- await'
 3. app.use() is most of the time used in middlewares.
 4. async function () always return promise. need to handle that for good practice.
+5. Use middleware for the Routing user to the controllers.
 ```
 
 # Note for errors 
@@ -337,6 +429,7 @@ all the function regarding files
 1. In the import section write the complete name of the file with extension other wise it will throw error. ( only naming the directory will now work)
 ```
 <strong>for eg : </strong>
+
 ### this will throw error
 ```javascript
 import { DB_NAME } from "../constants";
@@ -345,3 +438,30 @@ import { DB_NAME } from "../constants";
 ```javascript
 import { DB_NAME } from "../constants.js";
 ```
+
+#
+#
+```
+2. Always need to return function for higher order function.
+```
+<strong>for eg : </strong>
+
+### this will Not Work
+```javascript
+const asyncHandler= (requestHandler)=>{
+    (req,res,next)=>{ 
+       Promise.resolve(requestHandler(req,res,next))
+        .catch((err) => next(err))
+    }
+}
+```
+### this will work
+```javascript
+const asyncHandler= (requestHandler)=>{
+   return (req,res,next)=>{ // return is necessary for making it higher order function.
+        Promise.resolve(requestHandler(req,res,next))
+        .catch((err) => next(err))
+    }
+}
+```
+<strong>Why not Work :</strong> Because that function we are creating is higher order function which means it expect a call back function.
