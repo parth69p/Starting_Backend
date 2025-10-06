@@ -412,9 +412,154 @@ const router = Router()
 ```javascript
 router.route('/register').post(registerUser)
 ```
+#
+# Day 8 (Registring User)
+```
+Today we Register the user to our MongoDB(atlas) cloud data base and handled Avatar images and later uploaded this image on the cloudinary.
 
+Right now I used 'Postman' tool for testing the Api
+```
+```
+Note: All the Registration code is written in Single controller 'userRegistration'
+```
+Here are steps for registring user:
+```
+1. first need to get data from the user.
+2. need to validate the data. 
+3. Check if user already exist: username, email
+4. check for images, check for avatar
+5. upload them to cloudinary, avatar
+6. create user object - create entry in db 
+7. remove password and refresh token field from response.
+8. Check for user creation 
+9. return response of success.
+```
 
+1.<strong> Getting Data form the User </strong>
+```
+I used  Postman for sending the data from front end.
+```
+2.<strong>For Validating :</strong>
+```javascript
+if(
+      [fullName,email,username,password].some((field)=>
+    field?.trim() ==="")
+  )
+{
+    throw new ApiError(400,"All fields are required");
+}
+```
+3.<strong > Checking User Already Exist</strong>
+```javascript
+// checking if user already exist using the model
+const existedUser = await User.findOne({
+    $or:[{ username }, { email }]
+})
+    if(existedUser){
+        throw new ApiError(409,"User already Exists")
+    }
+  ```
+4.<strong>Checking for images and avatar </strong>
+```javascript
+const avatarLocalPath = req.files?.avatar?.[0]?.path;
+const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
+  if(!avatarLocalPath){
+    throw new ApiError(400,"Avatar file is required.")
+  }
+  ```
+  ```
+  Note:  this 'req.files' only work if you are using middleware 'upload.fields()'
 
+  if you have written 'upload.single()' than you can access this using 'req.file' (singular).
+
+  In our case we are using upload.fiels() and we have inject it before routing to Regiter controller.
+  ```
+  ```javascript
+  // code we Used 
+  
+router.route('/register').post(
+  upload.fields([
+    {
+        name:"avatar",
+        maxCount: 1
+    },
+    {
+        name: "coverImage",
+        maxCount:1
+    }
+  ]),
+    registerUser
+)
+  ```
+  5.<strong>Uploading the image to Cloudinary</strong>
+  ```javascript
+  const avatar = await uploadOnCloudinary(avatarLocalPath)
+const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+
+if(!avatar){
+    throw new ApiError(500,"Something went wrong, File is not uploaded.")
+}
+  ```
+  ```
+  Note : For uploading the files on the cloudinary we have created the utility. 
+  so that need not to write every time.
+  ```
+  ```javascript
+  // here is Utility we used 
+  const uploadOnCloudinary = async(localFilePath)=>{
+    try {
+        if(!localFilePath) return null
+        // upload file on Cloudinary 
+     const response =  await  cloudinary.uploader.upload(localFilePath,{// for uploading to cloudinary
+            resource_type:"auto"
+        })
+        // file has been uploaded successfull
+        console.log("File is uploaded on cloudinary ",response.url);
+        return response //
+        
+    } catch (error) {
+        fs.unlinkSync(localFilePath)// remove the Locally saved temporary file as the upload operation got failed.
+        return null;
+    }
+}
+```
+6.<strong>create user object - create entry in db</strong>
+```javascript
+const user = await User.create({
+    fullName,
+    avatar:avatar.url,
+    coverImage:coverImage?.url || "",
+    email,
+    password,
+    username: username.toLowerCase()
+})
+```
+```
+Note : create() method is inbuild binded with our model(User)
+```
+7.<strong> Remove password and refresh token field from response.</strong>
+```javascript
+const createduser = await User.findById(user._id).select(
+    "-password -refreshToken" 
+)
+```
+```
+Note : this 'select()' syntax is diffrent as it takes argumnents in string and used to remove the fields , for removing the field need to write the name of the field with the negative symbol and space between fields name is required.
+```
+8.<strong> Check for user creation</strong>
+```javascript
+if(!createduser){
+    throw new ApiError(500,"Somthing went wrong while registering the user")
+}
+```
+9.<strong> Return response of success.</strong>
+```javascript
+return res.status(201).json(
+    new ApiResponse(200,createduser,"User Registered Successfully")
+)
+```
+
+#
 ## Good Practices..
 ```
 1. Always write code of data base in 'try - catch '
