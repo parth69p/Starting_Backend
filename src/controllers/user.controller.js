@@ -17,10 +17,13 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 //  return response of success.
 
 const registerUser = asyncHandler(async (req,res)=>{
+// console.log("req.body Testing: ",req.body); // for testing purpose only
 
 const {fullName,email,username,password}=req.body// form data and json Data.
-console.log("email:",email);
-console.log("fullname : ",fullName);
+
+
+// console.log("email:",email);
+// console.log("fullname : ",fullName);
 // if(fullName==="" || email ==="" ||username===""|| password === ""){
 //     throw new ApiError(400,"All fields are required")
 // } 
@@ -46,7 +49,7 @@ const existedUser = await User.findOne({
 
 
 // **************************************************************
-console.log(req.files); // for debug
+// console.log(req.files); // for debug
 
 // Validating the avatar.
  const avatarLocalPath = req.files?.avatar?.[0]?.path;
@@ -77,7 +80,7 @@ const user = await User.create({
 const createduser = await User.findById(user._id).select(
     "-password -refreshToken" 
 )
-console.log(createduser);
+// console.log(createduser);// for testing
 if(!createduser){
     throw new ApiError(500,"Somthing went wrong while registering the user")
 }
