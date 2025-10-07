@@ -558,7 +558,115 @@ return res.status(201).json(
     new ApiResponse(200,createduser,"User Registered Successfully")
 )
 ```
+# Day 9 ( Testing the api Using PostMan) & (Debug)
+```
+Note : For Debugging the code i used console log of response and request , for checking the response is comming or not.
+```
+```
+Today I learn about how to Test the Api's using the POSTMAN , and also learn how to debug the code by checking erros.
+```
+## here are some req: console outputs from which i Learn and check what are values in req.
+#
+<h3>1 Testing of 'req.body'</h3>
 
+```javascript
+console.log("req.body Testing: ",req.body);// for Testing 
+const {fullName,email,username,password}=req.body
+```
+Output of Testing on console :
+```
+req.body Testing:  [Object: null prototype] {
+  fullName: 'Parthtinna',
+  email: 'parth@gmail.com',
+  username: 'parthtinna',
+  password: 'Tinna_parth'
+}
+```
+#
+<h3>2. Testing the cloudinary Response </h3>
+
+```javascript
+ const response =  await  cloudinary.uploader.upload(localFilePath,{// for uploading to cloudinary
+            resource_type:"auto"
+        })
+        // file has been uploaded successfull
+        console.log("File is uploaded on cloudinary ",response);
+```
+Output of tesiting on  the console:
+```
+File is uploaded on cloudinary  {
+  asset_id: 'a8990629597e6e3d562547e29b42d68b',
+  public_id: 'jgwyynn40pdvyakib3dk',
+  version: 1759842715,
+  version_id: '6ef3ede6e1bd9e463bdac852e61d45f2',
+  signature: 'f1b10c85b93ccf0dd67d7c75bf59f8516083e3ba',
+  width: 1920,
+  height: 1080,
+  format: 'jpg',
+  resource_type: 'image',
+  created_at: '2025-10-07T13:11:55Z',
+  tags: [],
+  bytes: 326749,
+  type: 'upload',
+  etag: '2324e3d856b7e29c138ab8b4901af472',
+  placeholder: false,
+  url: 'http://res.cloudinary.com/dcaeih348/image/upload/v1759842715/jgwyynn40pdvyakib3dk.jpg',
+  secure_url: 'https://res.cloudinary.com/dcaeih348/image/upload/v1759842715/jgwyynn40pdvyakib3dk.jpg',
+  asset_folder: '',
+  display_name: 'jgwyynn40pdvyakib3dk',
+  original_filename: 'wp6395200',
+  api_key: '429415225295416'
+}
+```
+<h3>3. Testing the User Created response</h3>
+
+```javascript
+
+const user = await User.create({
+    fullName,
+    avatar:avatar.url,
+    coverImage:coverImage?.url || "",
+    email,
+    password,
+    username: username.toLowerCase()
+})
+
+// ********************************SELECT TO REMOVE FIELDS *****************************************
+const createduser = await User.findById(user._id).select(
+    "-password -refreshToken" 
+)
+console.log(createduser);
+```
+Output of testing On the console.
+```
+{
+  _id: new ObjectId('68e5119c45b844a3fbb7e167'),
+  username: 'parthtinna',
+  email: 'parth@gmail.com',
+  fullName: 'Parthtinna',
+  avatar: 'http://res.cloudinary.com/dcaeih348/image/upload/v1759842715/jgwyynn40pdvyakib3dk.jpg',
+  coverImage: '',
+  watchHistory: [],
+  createdAt: 2025-10-07T13:11:56.520Z,
+  updatedAt: 2025-10-07T13:11:56.520Z,
+  __v: 0
+}
+```
+## From the Postman 
+```
+From the postman I send data through 'form-data' as and also Create the collection and set the Environment variable for my ease and also using industury standards.
+```
+1. Created my Own collection
+![alt text](image.png)
+
+2. Register Api Testing and sending data 
+![alt text](image-1.png)
+3. Created my own Environment 
+![alt text](image-2.png)
+4. Setting the varible inside environment.
+![alt text](image-3.png)
+
+<strong>From now I will be testing all api's in my collection</strong>
 #
 ## Good Practices..
 ```
@@ -567,6 +675,7 @@ return res.status(201).json(
 3. app.use() is most of the time used in middlewares.
 4. async function () always return promise. need to handle that for good practice.
 5. Use middleware for the Routing user to the controllers.
+6. for testing your api You need to check the response using 'console.log()
 ```
 
 # Note for errors 
